@@ -17,7 +17,7 @@ app.use("/todos", todorouter);
 
 //error handler
 app.use(function(err, req, res, next) {
-    res.status('500').json(err);
+    res.status('501').json(err.message);
 });
 
 //serve public files

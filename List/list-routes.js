@@ -19,6 +19,16 @@ router.route('/')
         });
 
     })
+
+//Routes that take id attributes
+router.route('/:id')
+       .get(function(req, res, next) {
+           listModel.findOne({_id: req.params.id}, function(err, todos) {
+               if(!todos) {return next(new Error("ID does not exist"))}
+               if(err){return next(err);}
+               res.status(200).json(todos);
+           });
+       })
    
     
 
