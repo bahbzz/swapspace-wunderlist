@@ -12,6 +12,13 @@ router.route('/')
 
       
     })
+    .post(function(req, res, next) {
+        listModel.create(req.body, function(err, todo) {
+            if(err){return next(err)}
+                res.status(200).json(todo);
+        });
+
+    })
    
     
 

@@ -10,10 +10,6 @@ var TdlistSchema = new mongoose.Schema({
     task: {
         type:String,
         required:true
-    },
-    time: {
-        type: Date,
-        default:Date.now
     }
 });
 

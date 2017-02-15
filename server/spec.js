@@ -25,6 +25,18 @@ var app = require('./server'),
                 });
         });
 
+         it("should add a record to the db", function(done) {
+            chai.request(app)
+            .post('/todos')
+            .send(tditem)
+            .end(function(err, res) {
+                res.status.should.equal(200)
+                should.not.exist(err)
+                res.body.should.be.an('object')
+                done();
+            });
+        });
+
 
     });
 
