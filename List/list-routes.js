@@ -19,6 +19,13 @@ router.route('/')
         });
 
     })
+    .delete(function(req, res, next) {
+        listModel.remove({}, function(err, todos) {
+            if(todos.length == 0) {return next(new Error("No todos found"))}
+            if(err){return nest(err)}
+                res.status(200).json(todo);
+        });
+    })
 
 //Routes that take id attributes
 router.route('/:id')
@@ -32,6 +39,13 @@ router.route('/:id')
        .put(function(req, res, next) {
            //console.log(req.body)
            listModel.findOneAndUpdate({_id: req.params.id}, req.body, function(err, todos) {
+               if(!todos) {return next(new Error("ID does not exist"))}
+               if(err){return next(err);}
+               res.status(200).json(todos);
+           });
+       })
+       .delete(function(req, res, next) {
+           listModel.findOneAndRemove({_id: req.params.id}, req.body, function(err, todos) {
                if(!todos) {return next(new Error("ID does not exist"))}
                if(err){return next(err);}
                res.status(200).json(todos);

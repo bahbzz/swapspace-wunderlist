@@ -20,18 +20,20 @@ var app = require('./server'),
             "task": "Home alone"
         };
 
-        it.skip("should get all todos", function(done) {
-            request(app)
-                .get("/todos")
-                .expect(200)
-                .expect("Content-type", "application/json")
-                .end(function(err, res) {
-                    expect(res.body).to.be.an('array')
-                    done();
-                });
-        });
-
-         it.skip("should add a record to the db", function(done) {
+       
+       it("should fail if there are no todo items in the db", function(done) {
+           request(app)
+           .get("/todos")
+           .expect(501)
+           .expect("Content-type", "application/json")
+           .end(function(err, res) {
+               expect(res.body).to.be.equal("No todos found")
+               done();
+           })
+       })
+       
+       
+        it("should add a todo to the db", function(done) {
             chai.request(app)
             .post('/todos')
             .send(tditem)
@@ -43,12 +45,22 @@ var app = require('./server'),
             });
         });
 
-         it.skip("should get a todo by id", function(done) {
+        it("should get all todos", function(done) {
+            request(app)
+                .get("/todos")
+                .expect(200)
+                .expect("Content-type", "application/json")
+                .end(function(err, res) {
+                    expect(res.body).to.be.an('array')
+                    done();
+                });
+        });
+
+        it("should get a todo by id", function(done) {
             request(app)
                 .post("/todos")
                 .send(upd)
                 .end(function(err,res) {
-                    //console.log(res.body);
                     var item_id = res.body._id;
                     request(app)
                         .get('/todos/' + item_id)
@@ -56,7 +68,6 @@ var app = require('./server'),
                         .expect("Content-type", "application/json")
                         .end(function(err, res) {
                             expect(res.body).to.be.an('object')
-                            console.log(res.body);
                             res.body.should.have.property('task');
                             res.body.task.should.equal("I need to go on a vacation in Maldives immediately")
                             done();
@@ -70,28 +81,46 @@ var app = require('./server'),
                 .end(function(err, res){
                     var td_id = res.body._id;
                     request(app)
-                        // .get('/todos/' + td_id)
-                        // .expect(200)
-                        // .expect("Content-type", "application/json")
-                        // .end(function(err, res) {
-                        //     var item = res.body.task;
-                        //     console.log(item);
-                            //request(app)
-                                .put('/todos/' + td_id)
-                                .send(newt)
-                                .end(function(err, res) {
-                                    //console.log(res.body)
-                                        res.status.should.equal(200)
-                                        should.not.exist(err)
-                                        res.body.should.be.an('object')
-                                        console.log(res.body.task);
-                                        done();                                    
-                                });
-                                //done();
-                        
-                   });
+                       .put('/todos/' + td_id)
+                       .send(newt)
+                       .end(function(err, res) {
+                            res.status.should.equal(200)
+                            should.not.exist(err)
+                            res.body.should.be.an('object')
+                            console.log(res.body.task);
+                            done();                                    
+                        });
+                                                
                 });
+        });
+           
+        it("should delete all todo items in the db", function(done) {
+                request(app)
+                .delete("/todos")
+                .end(function(err, res) {
+                    res.status.should.equal(200)
+                    done();
+                });
+            })
+            
+             it("should delete a todo item selected by ID", function(done) {
+                request(app)
+                    .post("/todos")
+                    .send(upd)
+                    .end(function(err, res) {
+                        var n_id = res.body._id;
+                        request(app)
+                        .delete("/todos/" + n_id)
+                        .end(function(err, res) {
+                            res.status.should.equal(200)
+                            res.should.be.json
+                            res.body.should.be.an('object')
+                            res.body.should.have.property('task')
+                            done();
+                        });
+                    });
 
+             });
 
     });
 
