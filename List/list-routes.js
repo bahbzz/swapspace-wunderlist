@@ -29,6 +29,14 @@ router.route('/:id')
                res.status(200).json(todos);
            });
        })
+       .put(function(req, res, next) {
+           //console.log(req.body)
+           listModel.findOneAndUpdate({_id: req.params.id}, req.body, function(err, todos) {
+               if(!todos) {return next(new Error("ID does not exist"))}
+               if(err){return next(err);}
+               res.status(200).json(todos);
+           });
+       })
    
     
 
